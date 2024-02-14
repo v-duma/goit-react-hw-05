@@ -1,0 +1,12 @@
+.btn {
+  margin-top: 40px;
+  margin-bottom: 20px;
+  text-decoration: none;
+  color: white;
+  background: orangered;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
