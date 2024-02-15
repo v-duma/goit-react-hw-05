@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   Link,
   Outlet,
@@ -6,16 +7,16 @@ import {
   useParams,
 } from "react-router-dom";
 import css from "./MovieDetailsPage.module.css";
-
-import { Suspense, useEffect, useState } from "react";
+import { Suspense } from "react";
 import { getMovieDetailsPage } from "../../services/movie.servisec";
 import { Loader } from "../../components/Loader/Loader";
+
 export default function MovieDetailsPage() {
   const { movieId } = useParams();
   const [movies, setMovies] = useState(null);
   const location = useLocation();
-
   const navigate = useNavigate();
+  const [previousLocation, setPreviousLocation] = useState("/"); // Початкове значення "/"
 
   useEffect(() => {
     async function fetchData() {
@@ -28,12 +29,19 @@ export default function MovieDetailsPage() {
     }
     fetchData();
   }, [movieId]);
+
+  useEffect(() => {
+    if (location.state && location.state.from) {
+      setPreviousLocation(location.state.from);
+    }
+  }, [location.state]);
+
   return (
     <div className={css.details}>
       <button
         className={css.btn}
         type="button"
-        onClick={() => navigate(location?.state?.from ?? "/")}
+        onClick={() => navigate(previousLocation)}
       >
         Go back
       </button>
@@ -54,10 +62,18 @@ export default function MovieDetailsPage() {
           <p>Genres: {movies.genres.map(({ name }) => name).join(", ")}</p>
           <ul>
             <li>
-              <Link to="cast">Cast</Link>
+              <Link
+                to={{ pathname: "cast", state: { from: location.pathname } }}
+              >
+                Cast
+              </Link>
             </li>
             <li>
-              <Link to="reviews">Reviews</Link>
+              <Link
+                to={{ pathname: "reviews", state: { from: location.pathname } }}
+              >
+                Reviews
+              </Link>
             </li>
           </ul>
           <Outlet />
